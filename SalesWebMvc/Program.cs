@@ -1,24 +1,33 @@
 using Microsoft.EntityFrameworkCore;
+using SalesWebMvc;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("SalesWebMvcContext") ?? throw new InvalidOperationException("Connection string 'SalesWebMvcContext' not found.");
+try { 
+builder.Services.AddDbContext<SalesWebMvcContext>
+    (options =>options
+    .UseMySql
+    (connectionString, ServerVersion
+    .AutoDetect(connectionString),
+    x => x.MigrationsAssembly("SalesWebMvc")));
 
-builder.Services.AddDbContext<SalesWebMvcContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddScoped<SeedingService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Se o projeto estiver rodando no seu computador (Modo Desenvolvimento)
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    SeedData(app);
 }
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
+// ... o resto do código para baixo continua igualzinho estava
+
 
 app.UseAuthorization();
 
@@ -31,3 +40,21 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+void SeedData(IApplicationBuilder app)
+{
+    using (var scope = app.ApplicationServices.CreateScope())
+    {
+        var seedingService = scope.ServiceProvider.GetRequiredService<SeedingService>();
+        seedingService.Seed();
+    }
+}
+
+}
+catch(Exception e)
+{
+
+    Console.WriteLine("Error : " + e.Message);
+
+}

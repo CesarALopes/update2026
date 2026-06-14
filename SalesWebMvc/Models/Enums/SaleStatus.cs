@@ -1,6 +1,6 @@
 ﻿namespace SalesWebMvc.Models
-{
-    public enum SaleStatus
+{ 
+    public enum SaleStatus : int
     {
 
         Pending,

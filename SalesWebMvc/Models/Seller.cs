@@ -3,17 +3,56 @@
     public class Seller
     {
 
-        int Id { get; set; }
+        public int Id { get; set; }
 
-        string Name { get; set; }        
-        
-        string Email { get; set; }
+        public string Name { get; set; }
+
+        public string Email { get; set; }
 
         public DateTime BirthDate { get; set; }
 
-        double BaseSalary { get; set; }
+        public double BaseSalary { get; set; }
+
+        public Department DepartMent { get; set; }
+
+        public ICollection<SalesRecord> SR { get; set; } = new List<SalesRecord>();
+
+        public void AddSales(SalesRecord Sr)
+        {
+
+            SR.Add(Sr);
+
+        }
+
+        public void RemoveSales(SalesRecord Sr)
+        {
+                     
+            SR.Remove(Sr);      
+                    
+        }
+
+        public double TotalSales(DateTime initial, DateTime final)
+        {
+
+            return SR.Where(sr => sr.Date >= initial && sr.Date <= final).Sum(sr => sr.Amount);
+
+        }
+        public Seller()
+        {
+        }
+        public Seller(int id, string name, string email, DateTime birthdate, double basesalary, Department department)
+        {
+
+            Id = id;
+            Name = name;
+            Email = email;
+            BirthDate = birthdate;
+            BaseSalary = basesalary;
+            DepartMent = department;
+                    
+        }
 
 
-
+     
     }
 }
